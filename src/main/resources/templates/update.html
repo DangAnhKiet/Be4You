@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BeForYou</title>
+    <style>
+        .green-button {
+            background-color: #17a2b8;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .container {
+            padding: 12px 12px 10px;
+            background-color: #f7f7f7;
+            margin: unset;
+        }
+
+        h1 {
+            margin-bottom: 4px;
+        }
+
+        form {
+            padding: 40px;
+            max-width: 400px;
+        }
+
+        input {
+            border: none;
+            border-radius: 2px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            display: inline-block;
+            font-size: 20px;
+            margin-bottom: 5px;
+            color: #333;
+            border: none;
+            border-radius: 5px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            font-size: 16px;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        button[type="button"] {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button[type="button"]:hover {
+            background-color: #669fff;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Edit Product</h1>
+    <button class="green-button" onclick="redirectToNewPage()">Back to listing</button>
+
+    <script th:inline="javascript">
+        function redirectToNewPage() {
+            window.location.href = 'home';
+        }
+    </script>
+</div>
+
+<div class="container-sm">
+    <i>Input *NULL* for null value</i>
+</div>
+<form id="myForm">
+    <label for="code">Code*:</label>
+    <input type="text" id="code" name="code" required>
+    <br>
+    <label for="name">Name*:</label>
+    <input type="text" id="name" name="name" required>
+    <br>
+    <label for="category">Category*:</label>
+    <input type="text" id="category" name="category" required>
+    <br>
+    <label for="brand">Brand:</label>
+    <input type="text" id="brand" name="brand" required>
+    <br>
+    <label for="type">Type:</label>
+    <input type="text" id="type" name="type" required>
+    <br>
+    <label for="description">Description:</label>
+    <input type="text" id="description" name="description" required>
+    <br>
+    <button type="button" onclick="submitForm()">Update</button>
+</form>
+<script>
+    function submitForm() {
+        var formData = {
+            code: document.getElementById("code").value,
+            name: document.getElementById("name").value,
+            category: document.getElementById("category").value,
+            brand: document.getElementById("brand").value,
+            type: document.getElementById("type").value,
+            description: document.getElementById("description").value
+        };
+
+        // Convert formData to JSON
+        var jsonData = JSON.stringify(formData);
+
+        // Make POST request to API endpoint
+        fetch('/be/products/' + formData.code, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: jsonData
+        })
+            .then(response => {
+                if (response.ok === true) {
+                    alert('Form updated successfully!');
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .catch(error => {
+                console.error('There was a problem with your fetch operation:', error);
+            });
+    }
+</script>
+</body>
+</html>

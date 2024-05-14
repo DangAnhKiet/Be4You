@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeForYou</title>
+    <style>
+        .green-button {
+            background-color: #17a2b8;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .container {
+            padding: 12px 12px 10px;
+            background-color: #f7f7f7;
+            margin: unset;
+        }
+
+        table {
+            padding: 12px;
+        }
+
+        body {
+            margin: 0;
+        }
+
+        h1 {
+            margin-bottom: 4px;
+        }
+
+        .container-sm {
+            padding: 12px;
+        }
+
+        .paging-row {
+            background-color: #f2f2f2;
+            text-align: center;
+        }
+        .paging-row button {
+            margin: 0 5px;
+        }
+
+        .pagination {
+            text-align: center;
+            text-decoration-color: #0FFFFF;
+        }
+
+        td:nth-child(2) {
+            color: #669fff;
+        }
+
+        button {
+            color: #669fff;
+        }
+
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            var currentPage = 1;
+            var pageSize = 6;
+            var totalPages = 3
+
+            loadData(currentPage);
+            function loadData(currentPage){
+                if (currentPage <= 0) {
+                    currentPage = 1;
+                }
+
+                $.ajax({
+                    url: "http://localhost:8080/be/products/" +currentPage+ "/" +pageSize,
+                    method: "GET",
+                    // data: { page: page, pageSize: pageSize }, //
+                    success: function(response){
+                        $("table").find("tr:gt(0)").remove();
+                        $("table tbody").empty();
+
+                        $.each(response.productList, function(index, item){
+                            var row = "<tr>" +
+                                "<td>" + item.id + "</td>" +
+                                "<td>" + item.code + "</td>" +
+                                "<td>" + item.name + "</td>" +
+                                "<td>" + item.category + "</td>" +
+                                "<td>" + item.brand + "</td>" +
+                                "<td>" + item.type + "</td>" +
+                                "<td>" + item.description + "</td>" +
+                                "</tr>";
+                            $("table").append(row);
+                        });
+
+                        updatePagination(response.pagination.total, currentPage);
+                    },
+                    error: function(xhr, status, error){
+                        console.error(xhr.responseText);
+                    }
+                });
+            }
+            function updatePagination(totalPages, currentPage) {
+                $(".pagination").empty();
+                $(".pagination").append("<button class='first'>First</button>");
+                $(".pagination").append("<button class='previous'>Previous</button>");
+                $(".pagination").append("<button class='current'>Current</button>");
+                $(".pagination").append("<button class='next'>Next</button>");
+                $(".pagination").append("<button class='last'>Last</button>");
+                totalPages = totalPages;
+            }
+
+            // Event handler for pagination buttons
+            $(".pagination").on("click", ".page", function(){
+                var page = $(this).text();
+                loadData(page);
+            });
+
+            $(".pagination").on("click", ".first", function(){
+                loadData(1);
+            });
+
+            $(".pagination").on("click", ".previous", function(){
+                loadData(currentPage - 1);
+            });
+
+            $(".pagination").on("click", ".current", function(){
+                loadData(currentPage);
+            });
+
+            $(".pagination").on("click", ".next", function(){
+                loadData(currentPage + 1);
+            });
+
+            $(".pagination").on("click", ".last", function(){
+                loadData(totalPages + 1);
+            });
+        });
+    </script>
+</head>
+<body>
+
+<div class="container">
+    <h1>Products</h1>
+    <button class="green-button" onclick="redirectToNewPage()">Create New Products</button>
+
+    <script th:inline="javascript">
+        function redirectToNewPage() {
+            /* Redirect to the desired page */
+            window.location.href = 'create';
+        }
+    </script>
+</div>
+
+<div class="container-sm">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Brand</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody id="tableBody">
+            </tbody>
+        </table>
+</div>
+<div class="pagination"></div>
+</body>
+</html>
